@@ -12,6 +12,7 @@ export default ({
   layout = undefined,
   extension = undefined,
   data = {},
+  filterChunks = () => false,
   options = {}
 }: {
   src: string
@@ -21,6 +22,7 @@ export default ({
   layout?: string
   extension?: string
   data?: Data
+  filterChunks?: (id: string) => Boolean,
   options?: Options
 }): Plugin => {
   const ignore = Array.isArray(exclude) ? exclude : [exclude]
@@ -52,6 +54,7 @@ export default ({
       let render: (template: string, fileName: string) => Promise<string>
       const templates = await getTemplates()
       const javascripts: string[] = []
+      const chunks: string[] = []
       const stylesheets: string[] = []
 
       const dataFor = (fileName: string): Data & {
@@ -59,6 +62,7 @@ export default ({
         stylesheets: string[]
       } => ({
         ...data,
+        chunks: chunks.map(relativeTo(fileName)),
         javascripts: javascripts.map(relativeTo(fileName)),
         stylesheets: stylesheets.map(relativeTo(fileName))
       })
@@ -88,9 +92,19 @@ export default ({
 
       Object.values(bundle).forEach(file => {
         switch (path.extname(file.fileName)) {
-          case '.js':
-            (file as OutputChunk).isEntry && javascripts.push(file.fileName)
-            break
+          case '.js': {
+            let chunk = (file as OutputChunk);
+            if(chunk.isEntry) {
+              javascripts.push(file.fileName);
+              break;
+            }
+
+            if(!chunk.isDynamicEntry && filterChunks(chunk.name)) {
+              chunks.push(file.fileName);
+            }
+
+            break;
+          }
           case '.css':
             (
               file.type === 'asset' ||
