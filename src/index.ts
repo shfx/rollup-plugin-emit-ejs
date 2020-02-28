@@ -22,7 +22,7 @@ export default ({
   layout?: string
   extension?: string
   data?: Data
-  filterChunks?: (id: string) => Boolean,
+  filterChunks?: (id: string) => boolean
   options?: Options
 }): Plugin => {
   const ignore = Array.isArray(exclude) ? exclude : [exclude]
@@ -93,7 +93,7 @@ export default ({
       Object.values(bundle).forEach(file => {
         switch (path.extname(file.fileName)) {
           case '.js': {
-            let chunk = (file as OutputChunk);
+            const chunk = (file as OutputChunk);
             if(chunk.isEntry) {
               javascripts.push(file.fileName);
               break;
