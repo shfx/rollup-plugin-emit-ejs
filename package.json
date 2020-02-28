@@ -8,7 +8,9 @@
   "author": "Julien Dargelos <contact@juliendargelos.com>",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "rollup.config.js",
+    "src"
   ],
   "scripts": {
     "build": "rollup -c",
