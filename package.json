@@ -10,6 +10,7 @@
   "files": [
     "dist",
     "rollup.config.js",
+    "tsconfig.json",
     "src"
   ],
   "scripts": {
